@@ -23,4 +23,5 @@ public class GeneratorConfiguration
     public string DbContextProject { get; set; }
     public List<string> DbContextClasses { get; set; } = new List<string>();
     public string SelectedDbContext { get; set; }
+    public List<string> AvailableTables { get; internal set; }
 }

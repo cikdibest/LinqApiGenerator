@@ -8,17 +8,13 @@
              Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
              Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
              mc:Ignorable="d"
-             d:DesignHeight="500" d:DesignWidth="600"
              Name="MyToolWindow">
 
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Header -->
             <RowDefinition Height="*"/>
-            <!-- Main Content -->
             <RowDefinition Height="Auto"/>
-            <!-- Footer Buttons -->
         </Grid.RowDefinitions>
 
         <!-- HEADER -->
@@ -42,17 +38,17 @@
 
                     <!-- Entity Project Selection -->
                     <TextBlock Text="Select Entity Project:" FontWeight="Bold"/>
-                    <ComboBox Name="cmbEntityProject" Width="500" Margin="5" SelectionChanged="cmbEntityProject_SelectionChanged"/>
+                    <ComboBox Name="cmbEntityProject" Width="500" Margin="5" SelectionChanged="ProjectSelectionChanged"/>
 
                     <TextBlock Text="Select Folder for Entities:" FontWeight="Bold"/>
-                    <ComboBox Name="cmbEntityFolder" Width="500" Margin="5"/>
+                    <ComboBox Name="cmbEntityFolder" Width="500" Margin="5" SelectionChanged="FolderSelectionChanged"/>
 
                     <!-- DTO Project Selection -->
                     <TextBlock Text="Select DTO Project:" FontWeight="Bold"/>
-                    <ComboBox Name="cmbDtoProject" Width="500" Margin="5" SelectionChanged="cmbDtoProject_SelectionChanged"/>
+                    <ComboBox Name="cmbDtoProject" Width="500" Margin="5" SelectionChanged="ProjectSelectionChanged"/>
 
                     <TextBlock Text="Select Folder for DTOs:" FontWeight="Bold"/>
-                    <ComboBox Name="cmbDtoFolder" Width="500" Margin="5"/>
+                    <ComboBox Name="cmbDtoFolder" Width="500" Margin="5" SelectionChanged="FolderSelectionChanged"/>
 
                     <!-- GenerateEntityTypeConfiguration Checkbox -->
                     <StackPanel Orientation="Horizontal" Margin="5">
@@ -62,10 +58,10 @@
 
                     <StackPanel Name="ConfigOptions" Visibility="Collapsed">
                         <TextBlock Text="Select Project for Configurations:" FontWeight="Bold"/>
-                        <ComboBox Name="cmbConfigProject" Width="500" Margin="5" SelectionChanged="cmbConfigProject_SelectionChanged"/>
+                        <ComboBox Name="cmbConfigProject" Width="500" Margin="5" SelectionChanged="ProjectSelectionChanged"/>
 
                         <TextBlock Text="Select Folder for Configurations:" FontWeight="Bold"/>
-                        <ComboBox Name="cmbConfigFolder" Width="500" Margin="5"/>
+                        <ComboBox Name="cmbConfigFolder" Width="500" Margin="5" SelectionChanged="FolderSelectionChanged"/>
                     </StackPanel>
 
                     <!-- Add DbSets to DbContext Checkbox -->
@@ -76,8 +72,7 @@
 
                     <StackPanel Name="DbContextOptions" Visibility="Collapsed">
                         <TextBlock Text="Select Project for DbContext:" FontWeight="Bold"/>
-                        <ComboBox Name="cmbDbContextProject" Width="500" Margin="5" SelectionChanged="cmbDbContextProject_SelectionChanged"/>
-
+                        <ComboBox Name="cmbDbContextProject" Width="500" Margin="5" SelectionChanged="ProjectSelectionChanged"/>
                         <TextBlock Text="Select DbContext Class:" FontWeight="Bold"/>
                         <ComboBox Name="cmbDbContextClass" Width="500" Margin="5"/>
                     </StackPanel>

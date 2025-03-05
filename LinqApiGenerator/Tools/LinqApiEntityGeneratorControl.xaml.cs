@@ -3,32 +3,15 @@
     using System.Diagnostics.CodeAnalysis;
     using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Media;
 
-    /// <summary>
-    /// Interaction logic for LinqApiEntityGeneratorControl.
-    /// </summary>
     public partial class LinqApiEntityGeneratorControl : UserControl
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LinqApiEntityGeneratorControl"/> class.
-        /// </summary>
+        private readonly GeneratorConfiguration config = new GeneratorConfiguration();
+
         public LinqApiEntityGeneratorControl()
         {
             this.InitializeComponent();
-        }
-
-        /// <summary>
-        /// Handles click on the button by displaying a message box.
-        /// </summary>
-        /// <param name="sender">The event sender.</param>
-        /// <param name="e">The event args.</param>
-        [SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions", Justification = "Sample code")]
-        [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter", Justification = "Default event handler naming pattern")]
-        private void button1_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show(
-                string.Format(System.Globalization.CultureInfo.CurrentUICulture, "Invoked '{0}'", this.ToString()),
-                "LinqApiEntityGenerator");
         }
 
         private async void txtConnectionString_TextChanged(object sender, TextChangedEventArgs e)
@@ -57,77 +40,57 @@
             UpdateGenerateButtonState();
         }
 
-
-
-        private void cmbEntityProject_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ProjectSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string selectedProject = cmbEntityProject.SelectedItem as string;
-            config.EntityProject = selectedProject;
+            if (sender is ComboBox comboBox)
+            {
+                string selectedProject = comboBox.SelectedItem as string;
 
-            config.EntityProjectFolders = ProjectHelper.GetProjectFolders(selectedProject);
-            cmbEntityFolder.ItemsSource = config.EntityProjectFolders;
-            UpdateGenerateButtonState();
+                if (comboBox == cmbEntityProject)
+                {
+                    config.EntityProject = selectedProject;
+                    config.EntityProjectFolders = ProjectHelper.GetProjectFolders(selectedProject);
+                    cmbEntityFolder.ItemsSource = config.EntityProjectFolders;
+                }
+                else if (comboBox == cmbDtoProject)
+                {
+                    config.DtoProject = selectedProject;
+                    config.DtoProjectFolders = ProjectHelper.GetProjectFolders(selectedProject);
+                    cmbDtoFolder.ItemsSource = config.DtoProjectFolders;
+                }
+                else if (comboBox == cmbConfigProject)
+                {
+                    config.ConfigProject = selectedProject;
+                    config.ConfigProjectFolders = ProjectHelper.GetProjectFolders(selectedProject);
+                    cmbConfigFolder.ItemsSource = config.ConfigProjectFolders;
+                }
+                else if (comboBox == cmbDbContextProject)
+                {
+                    config.DbContextProject = selectedProject;
+                    config.DbContextClasses = DbContextHelper.GetDbContexts(selectedProject);
+                    cmbDbContextClass.ItemsSource = config.DbContextClasses;
+                }
+
+                UpdateGenerateButtonState();
+            }
         }
 
-        private void cmbDtoProject_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void FolderSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string selectedProject = cmbDtoProject.SelectedItem as string;
-            config.DtoProject = selectedProject;
+            if (sender is ComboBox comboBox)
+            {
+                string selectedFolder = comboBox.SelectedItem as string;
 
-            config.DtoProjectFolders = ProjectHelper.GetProjectFolders(selectedProject);
-            cmbDtoFolder.ItemsSource = config.DtoProjectFolders;
-            UpdateGenerateButtonState();
+                if (comboBox == cmbEntityFolder)
+                    config.EntityFolder = selectedFolder;
+                else if (comboBox == cmbDtoFolder)
+                    config.DtoFolder = selectedFolder;
+                else if (comboBox == cmbConfigFolder)
+                    config.ConfigFolder = selectedFolder;
+
+                UpdateGenerateButtonState();
+            }
         }
-
-        private void cmbConfigProject_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            string selectedProject = cmbConfigProject.SelectedItem as string;
-            config.ConfigProject = selectedProject;
-
-            config.ConfigProjectFolders = ProjectHelper.GetProjectFolders(selectedProject);
-            cmbConfigFolder.ItemsSource = config.ConfigProjectFolders;
-            UpdateGenerateButtonState();
-        }
-
-        private void cmbEntityFolder_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            config.EntityFolder = cmbEntityFolder.SelectedItem as string;
-            UpdateGenerateButtonState();
-        }
-
-        private void cmbDtoFolder_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            config.DtoFolder = cmbDtoFolder.SelectedItem as string;
-            UpdateGenerateButtonState();
-        }
-
-        private void cmbConfigFolder_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            config.ConfigFolder = cmbConfigFolder.SelectedItem as string;
-            UpdateGenerateButtonState();
-        }
-
-
-
-        private void cmbDbContextProject_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            string selectedProject = cmbDbContextProject.SelectedItem as string;
-            config.DbContextProject = selectedProject;
-
-            config.DbContextClasses = DbContextHelper.GetDbContexts(selectedProject);
-            cmbDbContextClass.ItemsSource = config.DbContextClasses;
-            UpdateGenerateButtonState();
-        }
-
-
-
-        private void cmbDbContextClass_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            config.SelectedDbContext = cmbDbContextClass.SelectedItem as string;
-        }
-
-       
-
 
         private void chkGenerateEntityConfig_Checked(object sender, RoutedEventArgs e)
         {
@@ -136,14 +99,12 @@
             UpdateGenerateButtonState();
         }
 
-       
-        private void cmbDbContextClass_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void chkAddDbSets_Checked(object sender, RoutedEventArgs e)
         {
-            config.SelectedDbContext = cmbDbContextClass.SelectedItem as string;
+            config.AddDbSetsToDbContext = chkAddDbSets.IsChecked ?? false;
+            DbContextOptions.Visibility = config.AddDbSetsToDbContext ? Visibility.Visible : Visibility.Collapsed;
             UpdateGenerateButtonState();
         }
-
-
 
         private void UpdateGenerateButtonState()
         {
@@ -156,15 +117,5 @@
                                     && (!config.GenerateEntityTypeConfiguration || (!string.IsNullOrEmpty(config.ConfigProject) && !string.IsNullOrEmpty(config.ConfigFolder)))
                                     && (!config.AddDbSetsToDbContext || !string.IsNullOrEmpty(config.SelectedDbContext));
         }
-
-
-
-
-        private void UpdateGenerateButtonState()
-        {
-            btnGenerate.IsEnabled = config.IsConnectionStringValid && config.CanConnectToDatabase && config.SelectedTables.Count > 0;
-        }
-
-
     }
 }
